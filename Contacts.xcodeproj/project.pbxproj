@@ -15,6 +15,8 @@
 		C90F7C961A1CEC4700890DA3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C90F7C951A1CEC4700890DA3 /* Images.xcassets */; };
 		C90F7C991A1CEC4700890DA3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C90F7C971A1CEC4700890DA3 /* LaunchScreen.xib */; };
 		C90F7CA51A1CEC4700890DA3 /* ContactsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C90F7CA41A1CEC4700890DA3 /* ContactsTests.m */; };
+		C90F7CB01A1CF24B00890DA3 /* NetworkUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = C90F7CAF1A1CF24B00890DA3 /* NetworkUtility.m */; };
+		C90F7CB31A1D003500890DA3 /* MasterTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C90F7CB21A1D003500890DA3 /* MasterTableViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +45,10 @@
 		C90F7C9E1A1CEC4700890DA3 /* ContactsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ContactsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C90F7CA31A1CEC4700890DA3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C90F7CA41A1CEC4700890DA3 /* ContactsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactsTests.m; sourceTree = "<group>"; };
+		C90F7CAE1A1CF24B00890DA3 /* NetworkUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkUtility.h; sourceTree = "<group>"; };
+		C90F7CAF1A1CF24B00890DA3 /* NetworkUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkUtility.m; sourceTree = "<group>"; };
+		C90F7CB11A1D003500890DA3 /* MasterTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterTableViewCell.h; sourceTree = "<group>"; };
+		C90F7CB21A1D003500890DA3 /* MasterTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterTableViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,8 +94,12 @@
 				C90F7C8A1A1CEC4700890DA3 /* AppDelegate.m */,
 				C90F7C8C1A1CEC4700890DA3 /* MasterViewController.h */,
 				C90F7C8D1A1CEC4700890DA3 /* MasterViewController.m */,
+				C90F7CB11A1D003500890DA3 /* MasterTableViewCell.h */,
+				C90F7CB21A1D003500890DA3 /* MasterTableViewCell.m */,
 				C90F7C8F1A1CEC4700890DA3 /* DetailViewController.h */,
 				C90F7C901A1CEC4700890DA3 /* DetailViewController.m */,
+				C90F7CAE1A1CF24B00890DA3 /* NetworkUtility.h */,
+				C90F7CAF1A1CF24B00890DA3 /* NetworkUtility.m */,
 				C90F7C921A1CEC4700890DA3 /* Main.storyboard */,
 				C90F7C951A1CEC4700890DA3 /* Images.xcassets */,
 				C90F7C971A1CEC4700890DA3 /* LaunchScreen.xib */,
@@ -226,6 +236,8 @@
 			files = (
 				C90F7C8B1A1CEC4700890DA3 /* AppDelegate.m in Sources */,
 				C90F7C8E1A1CEC4700890DA3 /* MasterViewController.m in Sources */,
+				C90F7CB01A1CF24B00890DA3 /* NetworkUtility.m in Sources */,
+				C90F7CB31A1D003500890DA3 /* MasterTableViewCell.m in Sources */,
 				C90F7C881A1CEC4700890DA3 /* main.m in Sources */,
 				C90F7C911A1CEC4700890DA3 /* DetailViewController.m in Sources */,
 			);

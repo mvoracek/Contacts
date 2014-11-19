@@ -8,11 +8,19 @@
 
 #import "MasterViewController.h"
 #import "DetailViewController.h"
+#import "MasterTableViewCell.h"
 
 @interface MasterViewController ()
 
-@property NSMutableArray *objects;
+@property (nonatomic, strong) NSURLSession *session;
+@property NSMutableArray *names;
+@property NSMutableArray *workNumbers;
+
 @end
+
+static NSString *const CellID = @"contactCell";
+static NSString *const URLHost = @"https://solstice.applauncher.com/external/";
+static NSString *const URLContacts = @"contacts.json";
 
 @implementation MasterViewController
 
@@ -27,28 +35,67 @@
 
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
     self.navigationItem.rightBarButtonItem = addButton;
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    self.session = [NSURLSession sessionWithConfiguration:config];
+    
+    self.names = [NSMutableArray array];
+    self.workNumbers = [NSMutableArray array];
+    [self contactsFromJSON];
 }
 
 - (void)insertNewObject:(id)sender {
-    if (!self.objects) {
-        self.objects = [[NSMutableArray alloc] init];
+    if (!self.names) {
+        self.names = [[NSMutableArray alloc] init];
     }
-    [self.objects insertObject:[NSDate date] atIndex:0];
+    [self.names insertObject:[NSDate date] atIndex:0];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
+
+- (NSURL *)createURL
+{
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",URLHost, URLContacts]];
+    
+    return url;
+}
+
+- (void)contactsFromJSON
+{
+    NSURL *url = [self createURL];
+    
+    NSURLSessionDataTask *dataTask = [self.session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (!error) {
+            NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
+            if (httpResp.statusCode == 200) {
+//                NSError *jsonError;
+                
+                NSArray *contactsJSON = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+                
+                NSLog(@"%@", contactsJSON);
+                
+                for (NSDictionary *contacts in contactsJSON) {
+                    NSString *name = contacts[@"name"];
+                    NSString *number = contacts[@"phone"][@"work"];
+                    [self.names addObject:name];
+                    [self.workNumbers addObject:number];
+                }
+                [self.tableView reloadData];
+            }
+            
+            
+        }
+    }];
+    [dataTask resume];
+}
+
 
 #pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSDate *object = self.objects[indexPath.row];
+        NSDate *object = self.names[indexPath.row];
         [[segue destinationViewController] setDetailItem:object];
     }
 }
@@ -60,14 +107,18 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.objects.count;
+    return self.names.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    MasterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellID forIndexPath:indexPath];
 
-    NSDate *object = self.objects[indexPath.row];
-    cell.textLabel.text = [object description];
+//    NSDate *object = self.objects[indexPath.row];
+//    cell.textLabel.text = [object description];
+    
+    cell.contactName.text = self.names[indexPath.row];
+    cell.phoneNumber.text = self.workNumbers[indexPath.row];
+    
     return cell;
 }
 
@@ -78,11 +129,16 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.objects removeObjectAtIndex:indexPath.row];
+        [self.names removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
     }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 60.0;
 }
 
 @end

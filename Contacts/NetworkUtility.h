@@ -10,4 +10,7 @@
 
 @interface NetworkUtility : NSObject
 
+@property (nonatomic, strong) NSArray *contacts;
+@property (nonatomic, strong) NSURLSession *session;
+
 @end
