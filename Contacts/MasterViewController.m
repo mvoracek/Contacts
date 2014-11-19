@@ -15,6 +15,9 @@
 @property (nonatomic, strong) NSURLSession *session;
 @property NSMutableArray *names;
 @property NSMutableArray *workNumbers;
+@property NSMutableArray *photos;
+@property NSMutableArray *contacts;
+
 
 @end
 
@@ -41,6 +44,8 @@ static NSString *const URLContacts = @"contacts.json";
     
     self.names = [NSMutableArray array];
     self.workNumbers = [NSMutableArray array];
+    self.photos = [NSMutableArray array];
+    self.contacts = [NSMutableArray array];
     [self contactsFromJSON];
 }
 
@@ -77,8 +82,11 @@ static NSString *const URLContacts = @"contacts.json";
                 for (NSDictionary *contacts in contactsJSON) {
                     NSString *name = contacts[@"name"];
                     NSString *number = contacts[@"phone"][@"work"];
+                    NSString *photo = contacts[@"smallImageURL"];
                     [self.names addObject:name];
                     [self.workNumbers addObject:number];
+                    [self.photos addObject:photo];
+                    [self.contacts addObject:contacts];
                 }
                 [self.tableView reloadData];
             }
@@ -95,8 +103,8 @@ static NSString *const URLContacts = @"contacts.json";
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSDate *object = self.names[indexPath.row];
-        [[segue destinationViewController] setDetailItem:object];
+        NSMutableArray *contact = self.contacts[indexPath.row];
+        [[segue destinationViewController] setDetailItem:contact];
     }
 }
 
@@ -115,6 +123,10 @@ static NSString *const URLContacts = @"contacts.json";
 
 //    NSDate *object = self.objects[indexPath.row];
 //    cell.textLabel.text = [object description];
+    
+    NSURL *imageURL = [NSURL URLWithString:self.photos[indexPath.row]];
+    NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+    cell.contactImage.image = [UIImage imageWithData:imageData];
     
     cell.contactName.text = self.names[indexPath.row];
     cell.phoneNumber.text = self.workNumbers[indexPath.row];

@@ -10,6 +10,14 @@
 
 @interface DetailViewController ()
 
+@property (weak, nonatomic) IBOutlet UIImageView *contactPhoto;
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *companyLabel;
+@property (weak, nonatomic) IBOutlet UILabel *workPhone;
+@property (weak, nonatomic) IBOutlet UILabel *homePhone;
+@property (weak, nonatomic) IBOutlet UILabel *mobilePhone;
+
+
 @end
 
 @implementation DetailViewController
@@ -28,7 +36,11 @@
 - (void)configureView {
     // Update the user interface for the detail item.
     if (self.detailItem) {
-        self.detailDescriptionLabel.text = [self.detailItem description];
+        self.nameLabel.text = self.detailItem[@"name"];
+        self.companyLabel.text = self.detailItem[@"company"];
+        self.workPhone.text = self.detailItem[@"phone"][@"work"];
+        self.homePhone.text = self.detailItem[@"phone"][@"home"];
+        self.mobilePhone.text = self.detailItem[@"phone"][@"mobile"];
     }
 }
 
@@ -38,9 +50,6 @@
     [self configureView];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+
 
 @end
