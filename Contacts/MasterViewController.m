@@ -14,6 +14,8 @@
 
 @property (nonatomic, strong) NSURLSession *session;
 @property NSMutableArray *contacts;
+@property CGRect screenBounds;
+@property (strong, nonatomic) UIActivityIndicatorView *spinner;
 
 @end
 
@@ -25,30 +27,27 @@ static NSString *const URLContacts = @"contacts.json";
 
 - (void)awakeFromNib {
     [super awakeFromNib];
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
-    self.navigationItem.rightBarButtonItem = addButton;
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.session = [NSURLSession sessionWithConfiguration:config];
-    
     self.contacts = [NSMutableArray array];
+    self.screenBounds = [UIScreen mainScreen].bounds;
+    CGFloat navBarHeight = self.navigationController.navigationBar.frame.size.height;
+    CGFloat screenCenterX = self.screenBounds.size.width / 2;
+    CGFloat screenCenterY = (self.screenBounds.size.height / 2) - navBarHeight;
+    self.spinner = [[UIActivityIndicatorView alloc]
+                    initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    self.spinner.center = CGPointMake(screenCenterX, screenCenterY);
+    self.spinner.hidesWhenStopped = YES;
+    [self.view addSubview:self.spinner];
+    [self.spinner startAnimating];
+    
     [self contactsFromJSON];
-}
-
-- (void)insertNewObject:(id)sender {
-//    if (!self.names) {
-//        self.names = [[NSMutableArray alloc] init];
-//    }
-//    [self.names insertObject:[NSDate date] atIndex:0];
-//    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-//    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 - (NSURL *)createURL
@@ -75,7 +74,11 @@ static NSString *const URLContacts = @"contacts.json";
                 for (NSDictionary *contacts in contactsJSON) {
                     [self.contacts addObject:contacts];
                 }
-                [self.tableView reloadData];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.spinner stopAnimating];
+                    [self.tableView reloadData];
+                });
             }
             
             
@@ -116,20 +119,6 @@ static NSString *const URLContacts = @"contacts.json";
     cell.phoneNumber.text = contactDict[@"phone"][@"work"];
     
     return cell;
-}
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-//    if (editingStyle == UITableViewCellEditingStyleDelete) {
-//        [self.names removeObjectAtIndex:indexPath.row];
-//        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-//    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-//        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-//    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
