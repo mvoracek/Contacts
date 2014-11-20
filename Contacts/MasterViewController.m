@@ -13,11 +13,7 @@
 @interface MasterViewController ()
 
 @property (nonatomic, strong) NSURLSession *session;
-@property NSMutableArray *names;
-@property NSMutableArray *workNumbers;
-@property NSMutableArray *photos;
 @property NSMutableArray *contacts;
-
 
 @end
 
@@ -42,20 +38,17 @@ static NSString *const URLContacts = @"contacts.json";
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.session = [NSURLSession sessionWithConfiguration:config];
     
-    self.names = [NSMutableArray array];
-    self.workNumbers = [NSMutableArray array];
-    self.photos = [NSMutableArray array];
     self.contacts = [NSMutableArray array];
     [self contactsFromJSON];
 }
 
 - (void)insertNewObject:(id)sender {
-    if (!self.names) {
-        self.names = [[NSMutableArray alloc] init];
-    }
-    [self.names insertObject:[NSDate date] atIndex:0];
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+//    if (!self.names) {
+//        self.names = [[NSMutableArray alloc] init];
+//    }
+//    [self.names insertObject:[NSDate date] atIndex:0];
+//    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+//    [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 - (NSURL *)createURL
@@ -80,12 +73,6 @@ static NSString *const URLContacts = @"contacts.json";
                 NSLog(@"%@", contactsJSON);
                 
                 for (NSDictionary *contacts in contactsJSON) {
-                    NSString *name = contacts[@"name"];
-                    NSString *number = contacts[@"phone"][@"work"];
-                    NSString *photo = contacts[@"smallImageURL"];
-                    [self.names addObject:name];
-                    [self.workNumbers addObject:number];
-                    [self.photos addObject:photo];
                     [self.contacts addObject:contacts];
                 }
                 [self.tableView reloadData];
@@ -114,21 +101,19 @@ static NSString *const URLContacts = @"contacts.json";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.names.count;
+    return self.contacts.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MasterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellID forIndexPath:indexPath];
 
-//    NSDate *object = self.objects[indexPath.row];
-//    cell.textLabel.text = [object description];
-    
-    NSURL *imageURL = [NSURL URLWithString:self.photos[indexPath.row]];
+    NSDictionary *contactDict = self.contacts[indexPath.row];
+    NSURL *imageURL = [NSURL URLWithString:contactDict[@"smallImageURL"]];
     NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
     cell.contactImage.image = [UIImage imageWithData:imageData];
     
-    cell.contactName.text = self.names[indexPath.row];
-    cell.phoneNumber.text = self.workNumbers[indexPath.row];
+    cell.contactName.text = contactDict[@"name"];
+    cell.phoneNumber.text = contactDict[@"phone"][@"work"];
     
     return cell;
 }
@@ -139,12 +124,12 @@ static NSString *const URLContacts = @"contacts.json";
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.names removeObjectAtIndex:indexPath.row];
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-    }
+//    if (editingStyle == UITableViewCellEditingStyleDelete) {
+//        [self.names removeObjectAtIndex:indexPath.row];
+//        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+//    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+//        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+//    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

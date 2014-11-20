@@ -33,9 +33,6 @@
 - (void)setDetailItem:(id)newDetailItem {
     if (_detailItem != newDetailItem) {
         _detailItem = newDetailItem;
-            
-        // Update the view.
-        [self configureView];
     }
 }
 
@@ -48,6 +45,8 @@
         self.homePhone.text = self.detailItem[@"phone"][@"home"];
         self.mobilePhone.text = self.detailItem[@"phone"][@"mobile"];
         self.birthdayLabel.text = [self dateFromSeconds:self.detailItem[@"birthdate"]];
+        self.streetAddressLabel.text = self.addressInfo[@"street"];
+        self.cityStateZipLabel.text = [self createCityStateZip];
     }
 }
 
@@ -59,7 +58,6 @@
     self.session = [NSURLSession sessionWithConfiguration:config];
     
     [self contactsFromJSON];
-    [self configureView];
 }
 
 - (NSString *)dateFromSeconds:(NSString *)seconds
@@ -115,9 +113,8 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     self.contactPhoto.image = [UIImage imageWithData:imageData];
-                    self.streetAddressLabel.text = self.addressInfo[@"street"];
-                    self.cityStateZipLabel.text = [self createCityStateZip];
                     self.emailLabel.text = contactsJSON[@"email"];
+                    [self configureView];
                 });
             }
         }
