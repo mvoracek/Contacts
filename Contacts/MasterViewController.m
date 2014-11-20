@@ -97,7 +97,6 @@ static NSString *const URLContacts = @"contacts.json";
     [dataTask resume];
 }
 
-
 #pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
