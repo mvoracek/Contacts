@@ -93,7 +93,7 @@ static NSString *const URLContacts = @"contacts.json";
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         NSMutableArray *contact = self.contacts[indexPath.row];
-        [[segue destinationViewController] setDetailItem:contact];
+        [[segue destinationViewController] setContactDetails:contact];
     }
 }
 

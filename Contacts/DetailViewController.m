@@ -23,6 +23,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *cityStateZipLabel;
 @property (weak, nonatomic) IBOutlet UILabel *birthdayLabel;
 @property (weak, nonatomic) IBOutlet UILabel *emailLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *favoriteStar;
+@property CGRect screenBounds;
+@property (strong, nonatomic) UIActivityIndicatorView *spinner;
 
 @end
 
@@ -30,21 +33,21 @@
 
 #pragma mark - Managing the detail item
 
-- (void)setDetailItem:(id)newDetailItem {
-    if (_detailItem != newDetailItem) {
-        _detailItem = newDetailItem;
+- (void)setContactDetails:(id)newDetailItem {
+    if (_contactDetails != newDetailItem) {
+        _contactDetails = newDetailItem;
     }
 }
 
 - (void)configureView {
-    // Update the user interface for the detail item.
-    if (self.detailItem) {
-        self.nameLabel.text = self.detailItem[@"name"];
-        self.companyLabel.text = self.detailItem[@"company"];
-        self.workPhone.text = self.detailItem[@"phone"][@"work"];
-        self.homePhone.text = self.detailItem[@"phone"][@"home"];
-        self.mobilePhone.text = self.detailItem[@"phone"][@"mobile"];
-        self.birthdayLabel.text = [self dateFromSeconds:self.detailItem[@"birthdate"]];
+    
+    if (self.contactDetails) {
+        self.nameLabel.text = self.contactDetails[@"name"];
+        self.companyLabel.text = self.contactDetails[@"company"];
+        self.workPhone.text = self.contactDetails[@"phone"][@"work"];
+        self.homePhone.text = self.contactDetails[@"phone"][@"home"];
+        self.mobilePhone.text = self.contactDetails[@"phone"][@"mobile"];
+        self.birthdayLabel.text = [self dateFromSeconds:self.contactDetails[@"birthdate"]];
         self.streetAddressLabel.text = self.addressInfo[@"street"];
         self.cityStateZipLabel.text = [self createCityStateZip];
     }
@@ -57,7 +60,18 @@
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.session = [NSURLSession sessionWithConfiguration:config];
     
-    [self contactsFromJSON];
+    self.screenBounds = [UIScreen mainScreen].bounds;
+    CGFloat navBarHeight = self.navigationController.navigationBar.frame.size.height;
+    CGFloat screenCenterX = self.screenBounds.size.width / 2;
+    CGFloat screenCenterY = (self.screenBounds.size.height / 2) - navBarHeight;
+    self.spinner = [[UIActivityIndicatorView alloc]
+                    initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    self.spinner.center = CGPointMake(screenCenterX, screenCenterY);
+    self.spinner.hidesWhenStopped = YES;
+    [self.view addSubview:self.spinner];
+    [self.spinner startAnimating];
+    
+    [self requestForDetails];
 }
 
 - (NSString *)dateFromSeconds:(NSString *)seconds
@@ -83,15 +97,9 @@
     return cityStateZip;
 }
 
-- (NSURL *)createURL
+- (void)requestForDetails
 {
-    NSURL *url = [NSURL URLWithString:self.detailItem[@"detailsURL"]];
-    return url;
-}
-
-- (void)contactsFromJSON
-{
-    NSURL *url = [self createURL];
+    NSURL *url = [NSURL URLWithString:self.contactDetails[@"detailsURL"]];
     __block NSString *photo;
     
     NSURLSessionDataTask *dataTask = [self.session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -114,6 +122,13 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     self.contactPhoto.image = [UIImage imageWithData:imageData];
                     self.emailLabel.text = contactsJSON[@"email"];
+                    BOOL favorite = [contactsJSON[@"favorite"] boolValue];
+                    if (favorite) {
+                        self.favoriteStar.image = [UIImage imageNamed:@"goldStar"];
+                    } else {
+                        self.favoriteStar.image = [UIImage imageNamed:@"emptyStar"];
+                    }
+                    [self.spinner stopAnimating];
                     [self configureView];
                 });
             }

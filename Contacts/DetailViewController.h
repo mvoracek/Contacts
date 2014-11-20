@@ -10,7 +10,7 @@
 
 @interface DetailViewController : UIViewController
 
-@property (strong, nonatomic) id detailItem;
+@property (strong, nonatomic) id contactDetails;
 
 @end
 

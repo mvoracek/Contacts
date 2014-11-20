@@ -28,12 +28,27 @@ static NSString *const URLContacts = @"contacts.json";
         if (!error) {
             NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
             if (httpResp.statusCode == 200) {
-                NSError *jsonError;
+                //                NSError *jsonError;
                 
-                NSDictionary *contactsJSON = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+                NSArray *contactsJSON = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+                
+                NSLog(@"%@", contactsJSON);
+                
+                for (NSDictionary *contacts in contactsJSON) {
+                    [self.contacts addObject:contacts];
+                }
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+//                    [self.spinner stopAnimating];
+//                    [self.tableView reloadData];
+                });
             }
+            
+            
         }
     }];
+    [dataTask resume];
 }
+
 
 @end
