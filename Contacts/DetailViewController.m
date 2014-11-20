@@ -47,7 +47,7 @@
         self.workPhone.text = self.detailItem[@"phone"][@"work"];
         self.homePhone.text = self.detailItem[@"phone"][@"home"];
         self.mobilePhone.text = self.detailItem[@"phone"][@"mobile"];
-        self.birthdayLabel.text = self.detailItem[@"birthdate"];
+        self.birthdayLabel.text = [self dateFromSeconds:self.detailItem[@"birthdate"]];
     }
 }
 
@@ -60,6 +60,19 @@
     
     [self contactsFromJSON];
     [self configureView];
+}
+
+- (NSString *)dateFromSeconds:(NSString *)seconds
+{
+    NSInteger dateInt = [seconds integerValue];
+    NSDate *lastUpdate = [[NSDate alloc] initWithTimeIntervalSinceReferenceDate:-dateInt];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+    
+    NSString *birthdate = [dateFormatter stringFromDate:lastUpdate];
+    
+    return birthdate;
 }
 
 - (NSString *)createCityStateZip
