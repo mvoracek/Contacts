@@ -50,16 +50,25 @@ static NSString *const URLContacts = @"contacts.json";
     [self contactsFromJSON];
 }
 
-- (NSURL *)createURL
+- (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock
 {
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",URLHost, URLContacts]];
-    
-    return url;
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               if (!error)
+                               {
+                                   UIImage *image = [[UIImage alloc] initWithData:data];
+                                   completionBlock(YES,image);
+                               } else{
+                                   completionBlock(NO,nil);
+                               }
+                           }];
 }
 
 - (void)contactsFromJSON
 {
-    NSURL *url = [self createURL];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",URLHost, URLContacts]];;
     
     NSURLSessionDataTask *dataTask = [self.session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (!error) {
@@ -80,8 +89,6 @@ static NSString *const URLContacts = @"contacts.json";
                     [self.tableView reloadData];
                 });
             }
-            
-            
         }
     }];
     [dataTask resume];
@@ -109,11 +116,18 @@ static NSString *const URLContacts = @"contacts.json";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MasterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellID forIndexPath:indexPath];
-
     NSDictionary *contactDict = self.contacts[indexPath.row];
     NSURL *imageURL = [NSURL URLWithString:contactDict[@"smallImageURL"]];
-    NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-    cell.contactImage.image = [UIImage imageWithData:imageData];
+    //placeholder image
+    cell.contactImageView.image = [UIImage imageNamed:@"default"];
+    
+    [self downloadImageWithURL:imageURL completionBlock:^(BOOL succeeded, UIImage *image) {
+        if (succeeded) {
+            cell.contactImageView.image = image;
+        } else {
+            //error statement
+        }
+    }];
     
     cell.contactName.text = contactDict[@"name"];
     cell.phoneNumber.text = contactDict[@"phone"][@"work"];

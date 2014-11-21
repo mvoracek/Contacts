@@ -71,6 +71,7 @@
     [self.view addSubview:self.spinner];
     [self.spinner startAnimating];
     
+    self.contactPhoto.image = [UIImage imageNamed:@"default"];
     [self requestForDetails];
 }
 
@@ -97,6 +98,22 @@
     return cityStateZip;
 }
 
+- (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock
+{
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               if (!error)
+                               {
+                                   UIImage *image = [[UIImage alloc] initWithData:data];
+                                   completionBlock(YES,image);
+                               } else{
+                                   completionBlock(NO,nil);
+                               }
+                           }];
+}
+
 - (void)requestForDetails
 {
     NSURL *url = [NSURL URLWithString:self.contactDetails[@"detailsURL"]];
@@ -106,7 +123,6 @@
         if (!error) {
             NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
             if (httpResp.statusCode == 200) {
-                //                NSError *jsonError;
                 
                 NSDictionary *contactsJSON = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
                 
@@ -120,7 +136,13 @@
                 self.addressInfo = contactsJSON[@"address"];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    self.contactPhoto.image = [UIImage imageWithData:imageData];
+                    [self downloadImageWithURL:imageURL completionBlock:^(BOOL succeeded, UIImage *image) {
+                        if (succeeded) {
+                            self.contactPhoto.image = image;
+                        } else {
+                            //error statement
+                        }
+                    }];
                     self.emailLabel.text = contactsJSON[@"email"];
                     BOOL favorite = [contactsJSON[@"favorite"] boolValue];
                     if (favorite) {
