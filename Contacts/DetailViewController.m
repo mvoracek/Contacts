@@ -43,6 +43,8 @@
     
     if (self.contactDetails) {
         self.nameLabel.text = self.contactDetails[@"name"];
+        self.companyLabel.minimumScaleFactor = 10./self.companyLabel.font.pointSize;
+        self.companyLabel.adjustsFontSizeToFitWidth = YES;
         self.companyLabel.text = self.contactDetails[@"company"];
         self.workPhone.text = self.contactDetails[@"phone"][@"work"];
         self.homePhone.text = self.contactDetails[@"phone"][@"home"];
