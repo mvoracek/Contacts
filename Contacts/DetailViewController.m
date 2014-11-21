@@ -11,7 +11,6 @@
 @interface DetailViewController ()
 
 @property (nonatomic, strong) NSURLSession *session;
-@property NSString *photo;
 @property NSDictionary *addressInfo;
 @property (weak, nonatomic) IBOutlet UIImageView *contactPhoto;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
@@ -57,7 +56,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
     self.addressInfo = [NSDictionary dictionary];
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.session = [NSURLSession sessionWithConfiguration:config];
@@ -132,8 +130,7 @@
                 NSDictionary *contactsDetails = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
                 
                 photo = contactsDetails[@"largeImageURL"];
-                self.photo = photo;
-                NSURL *photoURL = [NSURL URLWithString:self.photo];
+                NSURL *photoURL = [NSURL URLWithString:photo];
                 NSData *photoData = [NSData dataWithContentsOfURL:photoURL];
                 self.contactPhoto.image = [UIImage imageWithData:photoData];
                 self.addressInfo = contactsDetails[@"address"];
