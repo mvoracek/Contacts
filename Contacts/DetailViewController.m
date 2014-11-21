@@ -75,9 +75,12 @@
     [self requestForDetails];
 }
 
+#pragma mark - Data for details
+
 - (NSString *)dateFromSeconds:(NSString *)seconds
 {
     NSInteger dateInt = [seconds integerValue];
+    //not sure what time interval to use here
     NSDate *lastUpdate = [[NSDate alloc] initWithTimeIntervalSinceReferenceDate:-dateInt];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -108,7 +111,7 @@
                                {
                                    UIImage *image = [[UIImage alloc] initWithData:data];
                                    completionBlock(YES,image);
-                               } else{
+                               } else {
                                    completionBlock(NO,nil);
                                }
                            }];
@@ -124,27 +127,25 @@
             NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
             if (httpResp.statusCode == 200) {
                 
-                NSDictionary *contactsJSON = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+                NSDictionary *contactsDetails = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
                 
-                NSLog(@"%@", contactsJSON);
-                
-                photo = contactsJSON[@"largeImageURL"];
+                photo = contactsDetails[@"largeImageURL"];
                 self.photo = photo;
-                NSURL *imageURL = [NSURL URLWithString:self.photo];
-                NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-                self.contactPhoto.image = [UIImage imageWithData:imageData];
-                self.addressInfo = contactsJSON[@"address"];
+                NSURL *photoURL = [NSURL URLWithString:self.photo];
+                NSData *photoData = [NSData dataWithContentsOfURL:photoURL];
+                self.contactPhoto.image = [UIImage imageWithData:photoData];
+                self.addressInfo = contactsDetails[@"address"];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self downloadImageWithURL:imageURL completionBlock:^(BOOL succeeded, UIImage *image) {
+                    [self downloadImageWithURL:photoURL completionBlock:^(BOOL succeeded, UIImage *image) {
                         if (succeeded) {
                             self.contactPhoto.image = image;
                         } else {
                             //error statement
                         }
                     }];
-                    self.emailLabel.text = contactsJSON[@"email"];
-                    BOOL favorite = [contactsJSON[@"favorite"] boolValue];
+                    self.emailLabel.text = contactsDetails[@"email"];
+                    BOOL favorite = [contactsDetails[@"favorite"] boolValue];
                     if (favorite) {
                         self.favoriteStar.image = [UIImage imageNamed:@"goldStar"];
                     } else {

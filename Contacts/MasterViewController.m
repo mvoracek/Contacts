@@ -74,7 +74,6 @@ static NSString *const URLContacts = @"contacts.json";
         if (!error) {
             NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
             if (httpResp.statusCode == 200) {
-//                NSError *jsonError;
                 
                 NSArray *contactsJSON = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
                 
