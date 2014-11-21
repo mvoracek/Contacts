@@ -87,7 +87,11 @@ static NSString *const URLContacts = @"contacts.json";
                     [self.spinner stopAnimating];
                     [self.tableView reloadData];
                 });
+            } else {
+                //json error handling
             }
+        } else {
+            //error handling
         }
     }];
     [dataTask resume];
@@ -124,7 +128,7 @@ static NSString *const URLContacts = @"contacts.json";
         if (succeeded) {
             cell.contactImageView.image = image;
         } else {
-            //error statement
+            //error handling
         }
     }];
     

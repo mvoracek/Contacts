@@ -80,8 +80,8 @@
 - (NSString *)dateFromSeconds:(NSString *)seconds
 {
     NSInteger dateInt = [seconds integerValue];
-    //not sure what time interval to use here
-    NSDate *lastUpdate = [[NSDate alloc] initWithTimeIntervalSinceReferenceDate:-dateInt];
+    //not sure what time interval to use here so I chose something that made the dates somewhat feasible
+    NSDate *lastUpdate = [[NSDate alloc] initWithTimeIntervalSinceReferenceDate:-labs(dateInt)];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
@@ -140,7 +140,7 @@
                         if (succeeded) {
                             self.contactPhoto.image = image;
                         } else {
-                            //error statement
+                            //error handling
                         }
                     }];
                     self.emailLabel.text = contactsDetails[@"email"];
@@ -153,7 +153,11 @@
                     [self.spinner stopAnimating];
                     [self configureView];
                 });
+            } else {
+                //json error handling
             }
+        } else {
+            //error handling
         }
     }];
     [dataTask resume];
